@@ -1,4 +1,4 @@
-station_id;lat;lon;elev;name;country;province;institution
+Station_id;Latitude;Longitude;Elevation (m);Name;Country;Province;Institution (supplier)
 10001;-22.10;-65.60;3459;LA QUIACA;Argentina;Jujuy;Servicio Meteorológico Nacional
 10011;-24.70;-60.58;130;LAS LOMITAS;Argentina;Formosa;Servicio Meteorológico Nacional
 10012;-24.85;-65.48;1221;SALTA AERO;Argentina;SALTA;Servicio Meteorológico Nacional

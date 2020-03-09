@@ -6,3 +6,9 @@ read_data <- function() {
   data.table::rbindlist(datos)[, date := as.Date(date)][]
 }
 
+
+read_metadata <- function() {
+  # Lee los metadatos de estación
+  datos <- data.table::fread(here::here("datos", "METADATA_1960-2012.csv"))
+  datos[, .(station_id, lon, lat, elev)]
+}
