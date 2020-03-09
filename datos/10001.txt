@@ -1,4 +1,4 @@
-station_id	date	pr	tmax	tmin	
+station_id	date	pr	tmax	tmin
 10001	1960-01-01	4.7	16.2	8.4
 10001	1960-01-02	3.0	16.2	7.3
 10001	1960-01-03	7.9	16.1	7.9
