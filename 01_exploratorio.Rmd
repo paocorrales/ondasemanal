@@ -1,0 +1,36 @@
+---
+title: "01_exploratorio"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(data.table)
+library(tidyverse)
+library(lubridate)
+source("scripts/helpfuns.R")
+```
+
+
+```{r read}
+claris <- read_data() %>% 
+  .[, dtr := tmax - tmin] %>% 
+  .[, anom_dtr := dtr - roll_mean_na(dtr, 31, 6)] %>% 
+  .[, anom_dtr := anom_dtr/sd(anom_dtr, na.rm = TRUE), by = .(station_id)] %>% 
+  .[, anom_dtr_complete := metR::ImputeEOF(anom_dtr ~ date | station_id)]
+
+meta <- read_metadata()
+
+claris[station_id == 10156] %>% 
+  ggplot(aes(wday(date, label = TRUE), anom_dtr_complete)) +
+  geom_boxplot()
+```
+ 
+```{r}
+claris_eof <- claris %>% 
+  metR::EOF(anom_dtr_complete ~ date | station_id, n = 1:20, data = .)
+
+autoplot(claris_eof)
+```
+
