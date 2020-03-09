@@ -4,7 +4,7 @@ read_data <- function() {
   datos <- lapply(files, data.table::fread, na.strings = "-99.9")
   
   data <- data.table::rbindlist(datos)[, date := as.Date(date)]
-  data <- data.table::setDT(tidyr::complete(data, station_id, date))[]
+  data <- data.table::as.data.table(tidyr::complete(data, station_id, date))[]
   
   return(data)
 }
@@ -13,7 +13,7 @@ read_data <- function() {
 read_metadata <- function() {
   # Lee los metadatos de estación
   datos <- data.table::fread(here::here("datos", "METADATA_1960-2012.csv"))
-  datos[, .(station_id, lon, lat, elev)]
+  datos[, .(station_id, name, lon, lat, elev)]
 }
 
 roll_mean_na <- function(x, w, na.tol) {
@@ -27,3 +27,24 @@ roll_mean_na <- function(x, w, na.tol) {
   }
   m
 }
+
+
+filter_anual_cycle <- function(date, x, n = 0:3) {
+  data <- data.table(date = date, x = x) 
+  seasonal <- data %>% 
+    .[, yday := update(date, year = 1000)] %>% 
+    .[, mean(x, na.rm = TRUE), by = .(yday)] %>% 
+    .[, seasonal := metR::FilterWave(V1, 0:3)] %>%
+    .[, .(yday, seasonal)]
+  
+  seasonal[data, on = .NATURAL] %>% 
+    .[, x := x - seasonal] %>% 
+    .$x
+}
+
+
+seasonal <- datos %>% 
+  .[, yday := update(date, year = 1000)] %>% 
+  .[, mean(dtr, na.rm = TRUE), by = .(station_id, yday)] %>% 
+  .[, seasonal := metR::FilterWave(V1, 0:3), by = station_id] %>%
+  .[, .(yday, seasonal, station_id)]
